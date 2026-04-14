@@ -15,7 +15,7 @@ df$pyr <- df$Ending_Age - df$Starting_Age
 a_n <- c(-0.75, 0.1, -0.05, -1.5)
 keep_constant <- c(0, 0, 0, 0)
 control <- list(
-"ncores" = 1, "lr" = 0.75, "maxiter" = 100, "halfmax" = 5, "epsilon" = 1e-3,
+"ncores" = 1, "lr" = 0.75, "maxiter" = 1, "halfmax" = 1, "epsilon" = 1e-3,
 "deriv_epsilon" = 1e-3, "step_max" = 0.2, "change_all" = TRUE,
 "thres_step_max" = 100.0, "verbose" = 4
 )
