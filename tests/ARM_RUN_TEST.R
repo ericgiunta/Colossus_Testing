@@ -22,10 +22,3 @@ control <- list(
 #
 print("Poisson Run Start")
 poisres <- PoisRun(Pois(pyr, Cancer_Status) ~ loglinear(a, 0) + linear(b, c, 1) + plinear(d, 2), df, a_n = a_n, control = control, norm = "max")
-assign_control <- list(check_num = 4, verbose = 4)
-print("Assignment Run Start")
-e <- EventAssignment(poisres, df, assign_control = assign_control, z = 2)
-
-elow <- e$lower_limit$predict
-emid <- e$midpoint$predict
-eupp <- e$upper_limit$predict
