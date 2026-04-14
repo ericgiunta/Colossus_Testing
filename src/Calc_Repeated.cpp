@@ -1963,10 +1963,10 @@ void Poisson_LogLik_Strata(List& model_bool, const int& nthreads, const int& tot
             s_weights.segment(InGroup[i] - 1, InGroup[i + 1]-InGroup[i] + 1) = VectorXd::Constant(InGroup[i + 1]-InGroup[i] + 1, E_sum / R_sum);
         }
     }
-    Rcout << "Strata weighting values" << endl;
-    for (int s_ij = 0; s_ij < Strata_vals.size(); s_ij++) {
-        Rcout << Events(s_ij) << " " << Pyr_R(s_ij) << " " << Events(s_ij) / Pyr_R(s_ij) << endl;
-    }
+//    Rcout << "Strata weighting values" << endl;
+//    for (int s_ij = 0; s_ij < Strata_vals.size(); s_ij++) {
+//        Rcout << Events(s_ij) << " " << Pyr_R(s_ij) << " " << Events(s_ij) / Pyr_R(s_ij) << endl;
+//    }
     if (!model_bool["single"]) {
         #ifdef _OPENMP
         #pragma omp parallel for schedule(dynamic) num_threads(nthreads) collapse(2)
@@ -1986,12 +1986,12 @@ void Poisson_LogLik_Strata(List& model_bool, const int& nthreads, const int& tot
                 Pyr_RdR(s_ij, ij) = Rd_sum / Pyr_R(s_ij);
             }
         }
-        Rcout << "Pyr_Rd values" << endl;
-        for (int ij = 0; ij < reqrdnum; ij++) {
-            for (int s_ij = 0; s_ij < Strata_vals.size(); s_ij++) {
-                Rcout << Pyr_Rd(s_ij, ij) << " " << Pyr_RdR(s_ij, ij) << endl;
-            }
-        }
+//        Rcout << "Pyr_Rd values" << endl;
+//        for (int ij = 0; ij < reqrdnum; ij++) {
+//            for (int s_ij = 0; s_ij < Strata_vals.size(); s_ij++) {
+//                Rcout << Pyr_Rd(s_ij, ij) << " " << Pyr_RdR(s_ij, ij) << endl;
+//            }
+//        }
         if (!model_bool["gradient"]) {
             #ifdef _OPENMP
             #pragma omp parallel for schedule(dynamic) num_threads(nthreads) collapse(2)
@@ -2017,12 +2017,12 @@ void Poisson_LogLik_Strata(List& model_bool, const int& nthreads, const int& tot
                     Pyr_RddR(s_ij, ijk) = Rdd_sum / Pyr_R(s_ij);
                 }
             }
-            Rcout << "Pyr_Rdd values" << endl;
-            for (int ijk = 0; ijk < reqrdnum*(reqrdnum + 1)/2; ijk++) {
-                for (int s_ij = 0; s_ij < Strata_vals.size(); s_ij++) {
-                    Rcout << Pyr_Rdd(s_ij, ijk) << " " << Pyr_RddR(s_ij, ijk) << endl;
-                }
-            }
+//            Rcout << "Pyr_Rdd values" << endl;
+//            for (int ijk = 0; ijk < reqrdnum*(reqrdnum + 1)/2; ijk++) {
+//                for (int s_ij = 0; s_ij < Strata_vals.size(); s_ij++) {
+//                    Rcout << Pyr_Rdd(s_ij, ijk) << " " << Pyr_RddR(s_ij, ijk) << endl;
+//                }
+//            }
         }
     }
     fill(Ll.begin(), Ll.end(), 0.0);
@@ -2049,10 +2049,9 @@ void Poisson_LogLik_Strata(List& model_bool, const int& nthreads, const int& tot
                 Lld[ij] = (temp.array().isFinite()).select(temp, 0).sum() - (Events.array() * Pyr_RdR.col(ij).array()).sum();
             }
         } else {
-//            #ifdef _OPENMP
-//            #pragma omp parallel for schedule(dynamic) num_threads(nthreads)
-//            #endif
-            Rcout << "Final Calc" << endl;
+            #ifdef _OPENMP
+            #pragma omp parallel for schedule(dynamic) num_threads(nthreads)
+            #endif
             for (int ijk = 0; ijk < reqrdnum*(reqrdnum + 1)/2; ijk++) {  //
                 int ij = 0;
                 int jk = ijk;
@@ -2064,13 +2063,13 @@ void Poisson_LogLik_Strata(List& model_bool, const int& nthreads, const int& tot
                 // temp = Rdd.col(ijk).array() * (CoL.array() - PyrC.col(0).array()) - PyrC.col(1).array() * RdR.col(ij).array() * RdR.col(jk).array();
                 temp = Rdd.col(ijk).array() * CoL.array() - PyrC.col(1).array() * RdR.col(ij).array() * RdR.col(jk).array();
                 Lldd[ij*reqrdnum+jk] = (temp.array().isFinite()).select(temp, 0).sum() - (Events.array() * (Pyr_RddR.col(ijk).array() - Pyr_RdR.col(ij).array() * Pyr_RdR.col(jk).array())).sum();
-                Rcout << Lldd[ij*reqrdnum+jk] << " " << (temp.array().isFinite()).select(temp, 0).sum() << " " << (Events.array() * (Pyr_RddR.col(ijk).array() - Pyr_RdR.col(ij).array() * Pyr_RdR.col(jk).array())).sum() << endl;
+//                Rcout << Lldd[ij*reqrdnum+jk] << " " << (temp.array().isFinite()).select(temp, 0).sum() << " " << (Events.array() * (Pyr_RddR.col(ijk).array() - Pyr_RdR.col(ij).array() * Pyr_RdR.col(jk).array())).sum() << endl;
                 if (ij != jk) {
                     Lldd[jk*reqrdnum+ij] = Lldd[ij*reqrdnum+jk];
                 } else {
                     temp = (Rd.col(ij).array() * CoL.array());
                     Lld[ij] = (temp.array().isFinite()).select(temp, 0).sum() - (Events.array() * Pyr_RdR.col(ij).array()).sum();
-                    Rcout << Lld[ij] << " " << (temp.array().isFinite()).select(temp, 0).sum() << " " << (Events.array() * Pyr_RdR.col(ij).array()).sum() << endl;
+//                    Rcout << Lld[ij] << " " << (temp.array().isFinite()).select(temp, 0).sum() << " " << (Events.array() * Pyr_RdR.col(ij).array()).sum() << endl;
                 }
             }
         }
