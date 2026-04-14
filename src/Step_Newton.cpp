@@ -191,22 +191,6 @@ void Calc_Change(const int& nthreads, const int& totalnum, const double& thres_s
     const Map<MatrixXd> Lldd_mat(as<Map<MatrixXd> >(Lldd_vec));
     const Map<VectorXd> Lld_mat(as<Map<VectorXd> >(Lld_vec));
     //
-//    Rcout << "Lld values: ";
-//    for (int i=0; i<kept_covs; i++){
-//        Rcout << Lld_vec[i] << " ";
-//    }
-//    Rcout << " " << endl;
-//    Rcout << "Lldd values: ";
-//    for (int ijk = 0; ijk < kept_covs*(kept_covs + 1)/2; ijk++) {
-//        int ij = 0;
-//        int jk = ijk;
-//        while (jk > ij) {
-//            ij++;
-//            jk -= ij;
-//        }
-//        Rcout << Lldd_vec[ij * kept_covs + jk] << " ";
-//    }
-//    Rcout << " " << endl;
     VectorXd Lldd_solve0 = Lldd_mat.colPivHouseholderQr().solve(- 1*Lld_mat);
     double ll_change = (Lldd_solve0.array() * Lld_mat.array()).sum();  //  We want to make sure it is moving toward the a maximum
     for (int i = 0; i < kept_covs; i++) {  //  The predicted change should be positive, accounting for the second order taylor expansion
@@ -218,25 +202,20 @@ void Calc_Change(const int& nthreads, const int& totalnum, const double& thres_s
             }
         }
     }
-//    Rcout << "ll_change " << ll_change << endl;
     if (ll_change < 0) {
         Lldd_solve0 *= -1;  //  If it is moving in the wrong direction, turn it around
     }
     VectorXd Lldd_solve = VectorXd::Zero(totalnum);
-//    Rcout << "lldd_solve: ";
     for (int ij = 0; ij < totalnum; ij++) {
         if (KeepConstant[ij] == 0) {
             int pij_ind = ij - sum(head(KeepConstant, ij));
             Lldd_solve(ij) = Lldd_solve0(pij_ind);
-//            Rcout << Lldd_solve(ij) << " ";
         }
     }
-//    Rcout << " " << endl;
     //
-//    #ifdef _OPENMP
-//    #pragma omp parallel for schedule(dynamic) num_threads(nthreads)
-//    #endif
-    Rcout << "dbeta checking" << endl;
+    #ifdef _OPENMP
+    #pragma omp parallel for schedule(dynamic) num_threads(nthreads)
+    #endif
     for (int ijk = 0; ijk < totalnum; ijk++) {
         if (KeepConstant[ijk] == 0) {
             int pjk_ind = ijk - sum(head(KeepConstant, ijk));
@@ -249,30 +228,20 @@ void Calc_Change(const int& nthreads, const int& totalnum, const double& thres_s
             } else {
                 dbeta[ijk] = lr * Lldd_solve(ijk);
             }
-            Rcout << dbeta[ijk] << " "; 
             //
             if ((tform[ijk] == "lin_quad_int") || (tform[ijk] == "lin_exp_int") || (tform[ijk] == "step_int") || (tform[ijk] == "lin_int")) {  //  the threshold values use different maximum deviation values
-                Rcout << "intercept value" << " ";
                 if (abs(dbeta[ijk]) > thres_step_max) {
                     dbeta[ijk] = thres_step_max * sign(dbeta[ijk]);
                 }
             } else {
-                Rcout << "non-intercept value" << " " << step_max << " " << abs(dbeta[ijk]) << " ";
                 if (abs(dbeta[ijk]) > step_max) {
                     dbeta[ijk] = step_max * sign(dbeta[ijk]);
                 }
-                Rcout << dbeta[ijk] << " ";
             }
         } else {
             dbeta[ijk] = 0;
         }
-        Rcout << " " << endl;
     }
-    Rcout << "dbeta: ";
-    for (int ijk = 0; ijk < totalnum; ijk++) {
-        Rcout << dbeta[ijk] << " ";
-    }
-    Rcout << " " << endl;
     return;
 }
 
