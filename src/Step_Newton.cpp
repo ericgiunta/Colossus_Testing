@@ -92,11 +92,7 @@ void Calc_Change_Cons(const MatrixXd& Lin_Sys, const VectorXd& Lin_Res, const  V
         if (ij < kept_covs) {
             Lldd_vec[jk * total_covs + ij] = Lldd[jk * kept_covs + ij];
             if (ij == jk) {
-                if (abs(Lld[ij]) < 1e-10) {
-                    Lld_vec[ij] = 0.0;
-                } else {
-                    Lld_vec[ij] = Lld[ij];
-                }
+                Lld_vec[ij] = Lld[ij];
             } else {
                 Lldd_vec[ij * total_covs + jk] = Lldd_vec[jk * kept_covs + ij];
             }
@@ -185,11 +181,7 @@ void Calc_Change(const int& nthreads, const int& totalnum, const double& thres_s
         }
         Lldd_vec[jk * kept_covs + ij] = Lldd[jk * kept_covs + ij];
         if (ij == jk) {
-            if (abs(Lld[ij]) < 1e-10) {
-                Lld_vec[ij] = 0.0;
-            } else {
-                Lld_vec[ij] = Lld[ij];
-            }
+            Lld_vec[ij] = Lld[ij];
         } else {
             Lldd_vec[ij * kept_covs + jk] = Lldd_vec[jk * kept_covs + ij];
         }
@@ -278,11 +270,7 @@ void Calc_Change_Basic(const int& nthreads, const int& totalnum, const double& l
         }
         Lldd_vec[jk * kept_covs + ij] = Lldd[jk * kept_covs + ij];
         if (ij == jk) {
-            if (abs(Lld[ij]) < 1e-10) {
-                Lld_vec[ij] = 0.0;
-            } else {
-                Lld_vec[ij] = Lld[ij];
-            }
+            Lld_vec[ij] = Lld[ij];
         } else {
             Lldd_vec[ij * kept_covs + jk] = Lldd_vec[jk * kept_covs + ij];
         }
@@ -375,11 +363,7 @@ void Calc_Change_Basic_Cons(const MatrixXd& Lin_Sys, const VectorXd& Lin_Res, co
         if (ij < kept_covs) {
             Lldd_vec[jk * total_covs + ij] = Lldd[jk * kept_covs + ij];
             if (ij == jk) {
-                if (abs(Lld[ij]) < 1e-10) {
-                    Lld_vec[ij] = 0.0;
-                } else {
-                    Lld_vec[ij] = Lld[ij];
-                }
+                Lld_vec[ij] = Lld[ij];
             } else {
                 Lldd_vec[ij * total_covs + jk] = Lldd_vec[jk * kept_covs + ij];
             }
@@ -466,11 +450,7 @@ void Calc_Change_Background(const int& nthreads, const int& totalnum, const int&
             //  Both are within the model parameters
             Lldd_vec[jk * total_val + ij] = Lldd[jk * kept_covs + ij];
             if (ij == jk) {
-                if (abs(Lld[ij]) < 1e-10) {
-                    Lld_vec[ij] = 0.0;
-                } else {
-                    Lld_vec[ij] = Lld[ij];
-                }
+                Lld_vec[ij] = Lld[ij];
             } else {
                 Lldd_vec[ij * total_val + jk] = Lldd_vec[jk * total_val + ij];
             }
@@ -484,11 +464,7 @@ void Calc_Change_Background(const int& nthreads, const int& totalnum, const int&
             if (ij == jk) {
                 //  We only want diagonal terms
                 int ij_strata = ij - kept_covs;
-                if (abs(LldOdds[ij_strata]) < 1e-10) {
-                    Lld_vec[ij] = 0.0;
-                } else {
-                    Lld_vec[ij] = LldOdds[ij_strata];
-                }
+                Lld_vec[ij] = LldOdds[ij_strata];
                 Lldd_vec[jk * total_val + ij] = LlddOdds[ij_strata];
             }
         }

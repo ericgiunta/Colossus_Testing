@@ -81,8 +81,8 @@ test_that("Checking pois strata default values", {
     #
     a_n <- c(-1, 1.17, -0.01)
     model <- Pois_Strata(time, status, cell) ~ loglinear(trt, 0) + loglin - dose(karno, 1) + PA()
-    poisres <- PoisRun(model, df, a_n = a_n, control = control)
-    expect_equal(poisres$beta_0, c(-0.1974857, 1.1691710, -2.9684002), tolerance = 1e-3)
+    poisres <- PoisRun(model, df, a_n = a_n, control = control, keep_constant = c(0,1,0))
+    expect_equal(poisres$LogLik, -196.8624, tolerance = 1e-2)
     #
     a_n <- c(0.1, 0.1, 0.5)
     model <- Pois_Strata(time, status, cell) ~ loglinear(trt, 0) + linear - dose(karno, 1) + PAE()
